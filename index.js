@@ -27,6 +27,16 @@ var hooks = [
   'update'
 ];
 
+function findGitRoot() {
+  var gitRevParseTopLevel = exec('git rev-parse --show-toplevel');
+  if (gitRevParseTopLevel.code !== 0) {
+    console.error('guppy-cli needs a git repository to work with.');
+    return exit(1);
+  }
+
+  return gitRevParseTopLevel.output.slice(0, -1);
+}
+
 function install(hook, dest, cb) {
   cb = cb || dest;
 
@@ -74,5 +84,6 @@ function installAll(dest, cb) {
   );
 }
 
+module.exports.findGitRoot = findGitRoot;
 module.exports.install = install;
 module.exports.installAll = installAll;
