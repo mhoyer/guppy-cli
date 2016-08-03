@@ -2,7 +2,6 @@
 /* global error */
 'use strict';
 
-require('shelljs/global');
 var fs = require("fs");
 var gup = require('../');
 var yargs = require('yargs')
@@ -40,8 +39,7 @@ var dest;
 if (argv.dest) {
   dest = argv.dest;
 } else {
-  var topLevel = exec('git rev-parse --show-toplevel', { silent: true })
-    .output.slice(0, -1);
+  var topLevel = gup.findGitRoot();
   if (test('-f', topLevel + '/.git')) {
     // this is a sub module
     var buf = fs.readFileSync(topLevel + '/.git', "utf8").trim();

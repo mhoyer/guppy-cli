@@ -44,9 +44,7 @@ function install(hook, dest, cb) {
   if (typeof cb !== 'function') cb(new Error('Callback must be a function.'));
   if (hooks.indexOf(hook) === -1) cb(new Error('Invalid hook name.'));
 
-  dest = ((typeof dest === 'function' ? null : dest) ||
-    exec('git rev-parse --show-toplevel')
-      .output.slice(0, -1) + '/.git/hooks/');
+  dest = (typeof dest === 'function' ? null : dest) || findGitRoot() + '/.git/hooks/';
 
   var destHook = path.join(dest, hook);
 
