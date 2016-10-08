@@ -40,6 +40,11 @@ if (argv.dest) {
   dest = argv.dest;
 } else {
   var topLevel = gup.findGitRoot();
+  if (topLevel instanceof Error) {
+    console.error('fatal: ' + topLevel.message);
+    exit(1);
+  }
+  
   if (test('-f', topLevel + '/.git')) {
     // this is a sub module
     var buf = fs.readFileSync(topLevel + '/.git', "utf8").trim();
@@ -49,11 +54,6 @@ if (argv.dest) {
     dest = topLevel + '/hooks/';
   } else {
     dest = topLevel + '/.git/hooks/';
-  }
-
-  if (error()) {
-    console.error('fatal: Not a git repository (or any of the parent directories): .git');
-    exit(1);
   }
 }
 

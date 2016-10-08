@@ -28,10 +28,9 @@ var hooks = [
 ];
 
 function findGitRoot() {
-  var gitRevParseTopLevel = exec('git rev-parse --show-toplevel');
+  var gitRevParseTopLevel = exec('git rev-parse --show-toplevel', { silent: true });
   if (gitRevParseTopLevel.code !== 0) {
-    console.error('guppy-cli needs a git repository to work with.');
-    return exit(1);
+    return new Error('Not a git repository (or any of the parent directories): .git');
   }
 
   return gitRevParseTopLevel.output.slice(0, -1);
@@ -44,7 +43,10 @@ function install(hook, dest, cb) {
   if (typeof cb !== 'function') cb(new Error('Callback must be a function.'));
   if (hooks.indexOf(hook) === -1) cb(new Error('Invalid hook name.'));
 
-  dest = (typeof dest === 'function' ? null : dest) || findGitRoot() + '/.git/hooks/';
+  var gitRoot = findGitRoot();
+  if (gitRoot instanceof Error) cb(gitRoot);
+
+  dest = (typeof dest === 'function' ? null : dest) || gitRoot + '/.git/hooks/';
 
   var destHook = path.join(dest, hook);
 
